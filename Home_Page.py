@@ -1,27 +1,35 @@
 import streamlit as st
 
-# Title of App
-st.title("Web Development Lab03 – NBA Analytics")
+st.title("Web Development Lab03")
 
-# Assignment Data
+
 st.header("CS 1301")
-st.subheader("Team 111, Web Development – Section A")
-st.subheader("Alexander Jaber and Bryce Phan")  # add teammates if you have them
+st.subheader("Team 111, Web Development - Section A")
+st.subheader("Bryce Phan, Alexander Jaber")
 
-# Introduction
+
 st.write("""
-Welcome to our Streamlit Web Development Lab03 app! This project uses the
-public **balldontlie** NBA API plus Google Gemini to explore basketball data.
+Welcome to our Streamlit Web Development Lab03 app! You can navigate between the pages using the sidebar to the left. The following pages are:
 
-Here is what each page does:
+1.Bryce Phan Portfolio: This is a brief description on Bryce\n 
 
-1. **NBA API Analysis** – Shows an NBA team's games, scores, and a chart of
-   points per game using data from the API.
-2. **Gemini + NBA Analysis** – Uses the same team and season data, but sends
-   a summary to Google Gemini to generate an analyst-style breakdown.
-3. **NBA Chatbot** – A small chatbot that knows about the selected team's
-   season and can answer questions in a conversational way.
-4. **Home Page** – Explains the purpose of the app and how to use it.
+2.Alexander Jaber Portfolioc: This is a brief description on Alexander\n
+
+3.NFL Stats: This page shows our NFL data visualizations and analysis\n
+
 """)
 
-st.info("Use the sidebar on the left to switch between the different pages.")
+st.divider()
+
+st.write("### About This Project")
+st.write("""
+This web application demonstrates our ability to:
+- Build multi-page Streamlit applications
+- Fetch and process data from external APIs
+- Create data visualizations
+- Integrate AI/LLM capabilities for data analysis
+""")
+
+st.divider()
+
+st.info("👈 Use the sidebar to navigate between different pages of our application!")
