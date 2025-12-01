@@ -1,8 +1,8 @@
 import streamlit as st
 import google.generativeai as genai
 import requests
+import json
 
-# CONFIGURE GEMINI
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
 st.title("NFL Chatbot")
@@ -36,18 +36,27 @@ if not teams:
     st.stop()
 
 team_names = [name for (tid, name) in teams]
-
 selected_team = st.selectbox("Choose an NFL team to chat about:", team_names)
 team_id = [tid for (tid, name) in teams if name == selected_team][0]
 
 raw_stats = get_team_stats(team_id)
+
+team_info = f"Team: {selected_team}\n"
 if raw_stats:
-    team_stats = raw_stats
-else:
-    team_stats = {"error": "Stats not available"}
+    splits = raw_stats.get("splits", {})
+    if splits and "categories" in splits:
+        categories = splits["categories"][:3]
+        team_info += "Key Stats:\n"
+        for cat in categories:
+            cat_name = cat.get("displayName", "")
+            team_info += f"  {cat_name}:\n"
+            for stat in cat.get("stats", [])[:5]:
+                team_info += f"    - {stat.get('displayName', '')}: {stat.get('displayValue', '')}\n"
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "conversation_context" not in st.session_state:
+    st.session_state.conversation_context = ""
 
 user_input = st.text_input("Ask a question:")
 
@@ -56,29 +65,30 @@ if st.button("Send"):
         st.warning("Please type a question.")
     else:
         try:
-            prompt = f"""
-You are an NFL analyst chatbot.
+            st.session_state.conversation_context += f"\nUser: {user_input}"
+            
+            prompt = f"""You are an NFL analyst chatbot. Answer questions about NFL teams using the data provided.
 
-Team: {selected_team}
-Stats: {team_stats}
+{team_info}
 
-Chat History: {st.session_state.chat_history}
+Previous Conversation:
+{st.session_state.conversation_context}
 
-User Question: {user_input}
-
-Answer naturally, clearly, and based on the stats above.
-"""
+Respond naturally and conversationally to the latest user question. Use the team stats when relevant."""
 
             model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
-
             bot_reply = response.text
+            
+            st.session_state.conversation_context += f"\nBot: {bot_reply}"
+            
             st.session_state.chat_history.append(("User", user_input))
             st.session_state.chat_history.append(("Bot", bot_reply))
-
-        except Exception:
-            st.error("Gemini is overloaded or the request failed. Try again.")
-            st.session_state.chat_history.append(("Bot", "Sorry, I hit a temporary error."))
+            
+        except Exception as e:
+            error_msg = "Sorry, I hit a temporary error. Try again."
+            st.error(f"Gemini error: {str(e)}")
+            st.session_state.chat_history.append(("Bot", error_msg))
 
 st.subheader("Conversation")
 for speaker, msg in st.session_state.chat_history:
