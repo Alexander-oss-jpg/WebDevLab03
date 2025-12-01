@@ -109,7 +109,7 @@ User's question:
 Answer naturally. Be clear, helpful, conversational, and use stats when relevant.
 """
 
-            model = genai.GenerativeModel("gemini-pro")
+            model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
 
             bot_reply = response.text
