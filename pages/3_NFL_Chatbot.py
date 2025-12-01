@@ -76,7 +76,7 @@ Previous Conversation:
 
 Respond naturally and conversationally to the latest user question. Use the team stats when relevant."""
 
-            model = genai.GenerativeModel("gemini-pro")
+            model = genai.GenerativeModel("models/gemini-1.5-pro")
             response = model.generate_content(prompt)
             bot_reply = response.text
             
