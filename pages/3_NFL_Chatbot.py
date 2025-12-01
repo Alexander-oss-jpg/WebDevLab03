@@ -24,7 +24,7 @@ def get_nfl_teams():
 
 @st.cache_data
 def get_team_stats(team_id):
-    url = f"https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/{season}/types/2/teams/{team_id}/statistics"
+    url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team_id}/statistics"
     resp = requests.get(url)
     if resp.status_code != 200:
         return None
