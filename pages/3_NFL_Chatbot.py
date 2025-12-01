@@ -4,7 +4,9 @@ import requests
 import json
 
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-
+st.write("Available models:")
+for model in genai.list_models():
+    st.write(f"- {model.name}")
 st.title("NFL Chatbot")
 st.write("""
 Ask anything about an NFL team — offense, defense, key players, matchups, strengths, 
