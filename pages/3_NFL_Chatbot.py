@@ -43,16 +43,8 @@ raw_stats = get_team_stats(team_id)
 
 team_info = f"Team: {selected_team}\n"
 if raw_stats:
-    splits = raw_stats.get("splits", {})
-    if splits and "categories" in splits:
-        categories = splits["categories"][:3]
-        team_info += "Key Stats:\n"
-        for cat in categories:
-            cat_name = cat.get("displayName", "")
-            team_info += f"  {cat_name}:\n"
-            for stat in cat.get("stats", [])[:5]:
-                team_info += f"    - {stat.get('displayName', '')}: {stat.get('displayValue', '')}\n"
-
+    team_info += f"Full Stats Data: {raw_stats}\n"
+    
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "conversation_context" not in st.session_state:
