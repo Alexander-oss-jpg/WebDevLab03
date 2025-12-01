@@ -104,7 +104,7 @@ Include:
 - A simple head-to-head prediction
 """
 
-            model = genai.GenerativeModel("gemini-pro")
+            model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
 
             st.subheader(f"{team_1} vs {team_2}: AI-Generated Breakdown")
