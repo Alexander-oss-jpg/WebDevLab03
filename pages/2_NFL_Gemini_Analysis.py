@@ -2,19 +2,31 @@ import streamlit as st
 import google.generativeai as genai
 import requests
 
-# CONFIGURE GEMINI (only once per file)
+
 
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-# PAGE HEADER
+# TODO: Fill out your team number, section, and team members
+
+st.title("NBA Insights: AI-Powered Breakdown")
+st.header("CS 1301")
+st.subheader("Team 111, Web Development - Section A")
+st.subheader("Alexander Jaber, Bryce Phan")
+
+
+# Import functions from Phase 2 if needed
+# from 1_NFL_API_Analysis import get_nfl_teams, get_team_stats
+
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+
 st.title("NFL Insights: AI-Powered Team Breakdown")
+
 st.write("""
-This page takes real NFL data from the ESPN API and processes it 
-with Google Gemini to create a clean, human-style comparison 
-between two NFL teams.
+This page uses real NFL team data from ESPN and processes it through Google Gemini 
+to create a clear, human-style comparison between two NFL teams. 
+You select the teams — the model generates the breakdown.
 """)
 
-# ESPN API ENDPOINTS
 
 TEAMS_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams"
 
@@ -42,26 +54,61 @@ def get_team_stats(team_id):
         return None
     return resp.json()
 
-# LOAD TEAMS
 
 teams = get_nfl_teams()
+
 if not teams:
-    st.error("Failed to load NFL teams.")
+    st.error("Could not load NFL teams.")
     st.stop()
 
-team_names = [name for (tid, name) in teams]
+team_names = [name for (_id, name) in teams]
 
-# USER INPUTS (Required for Phase 3)
+# User Inputs 
 
 team_1 = st.selectbox("Choose your first NFL team:", team_names)
 team_2 = st.selectbox("Choose your second NFL team:", team_names)
+
 detail = st.slider("Choose detail level for the breakdown:", 1, 5, 3)
 
-# FETCH → SHRINK → SEND TO GEMINI
+st.write("Click below to generate a custom AI comparison.")
+
+# Generate Analysis
 
 if st.button("Generate Team Comparison"):
     try:
-        with st.spinner("Generating analysis..."):
-
+        with st.spinner("Fetching stats and generating analysis..."):
+            
             id_1 = [tid for (tid, name) in teams if name == team_1][0]
             id_2 = [tid for (tid, name) in teams if name == team_2][0]
+
+            stats_1 = get_team_stats(id_1)
+            stats_2 = get_team_stats(id_2)
+
+            prompt = f"""
+You are an NFL analyst. Use the real team statistics provided below.
+
+Team 1: {team_1}
+Stats: {stats_1}
+
+Team 2: {team_2}
+Stats: {stats_2}
+
+Write a breakdown in a natural, conversational tone.
+Detail level: {detail}/5.
+
+Include:
+- Offensive strengths
+- Defensive strengths
+- Key weaknesses
+- Playstyle tendencies (run-heavy, pass-heavy, aggressive, conservative)
+- A simple head-to-head prediction
+"""
+
+            model = genai.GenerativeModel("gemini-pro")
+            response = model.generate_content(prompt)
+
+            st.subheader(f"{team_1} vs {team_2}: AI-Generated Breakdown")
+            st.write(response.text)
+
+    except Exception as e:
+        st.error(f"Error generating analysis: {e}")
