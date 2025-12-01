@@ -41,11 +41,10 @@ selected_team = st.selectbox("Choose an NFL team to chat about:", team_names)
 team_id = [tid for (tid, name) in teams if name == selected_team][0]
 
 raw_stats = get_team_stats(team_id)
-
-team_stats = {
-    "season": raw_stats.get("season", {}),
-    "leaders": raw_stats.get("leaders", [])
-}
+if raw_stats:
+    team_stats = raw_stats
+else:
+    team_stats = {"error": "Stats not available"}
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
